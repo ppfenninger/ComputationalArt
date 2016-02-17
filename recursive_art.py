@@ -18,7 +18,7 @@ def build_random_function(min_depth, max_depth):
     """
     ran = random.randint(min_depth, max_depth)
     func_list0 = ["x", "y"] #zero input arguments
-    func_list1 = ["sin_pi", "cos_pi"]
+    func_list1 = ["sin_pi", "cos_pi", "neg", "cube"]
     func_list2 = ["prod", "avg"]
     total_func_list = ["sin_pi", "cos_pi", "prod", "avg"]
     fun = []
@@ -65,6 +65,10 @@ def evaluate_random_function(f, x, y):
         return evaluate_random_function(f[1], x, y)*evaluate_random_function(f[2], x, y)
     elif f[0] == "prod":
         return (evaluate_random_function(f[1], x, y)+evaluate_random_function(f[2], x, y))/2
+    elif f[0] == "neg":
+        return -(evaluate_random_function(f[1], x, y)
+    elif f[0] = "cube":
+        return (evaluate_random_function(f[1], x, y)**(3)
 
 
 def remap_interval(val,
