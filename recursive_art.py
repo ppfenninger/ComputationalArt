@@ -18,59 +18,37 @@ def build_random_function(min_depth, max_depth):
                  (see assignment writeup for details on the representation of
                  these functions)
     """
-    ran = random.randint(min_depth, max_depth)
-    func_list0 = ["x", "y"] #zero input arguments
-    func_list1 = ["sin_pi", "cos_pi", "neg", "cube"]
-    func_list2 = ["prod", "avg"]
-    total_func_list = ["sin_pi", "cos_pi", "prod", "avg"]
-    fun = []
+    # define lamda functions
+    xEval = lambda x,y: x
+    yEval = lambda x,y: y
+    sin_pi = lambda x: math.sin(math.pi*x)
+    cos_pi = lambda x: math.cos(math.pi*x)
+    neg = lambda x: -1*x
+    cube = lambda x: x**3
+    prod = lambda x,y: x*y 
+    avg = lambda x,y: (x + y) / 2 
+
+    ran = random.randint(min_depth, max_depth) # picks an integer between the max and min depth
+
+    func_list0 = [xEval, yEval] #zero input arguments
+    func_list1 = [sin_pi, cos_pi, neg, cube]
+    func_list2 = [prod, avg]
+    total_func_list = func_list1 + func_list2 
 
     if ran <= 0:
-        fun.append(random.choice(func_list0))
+        fun = random.choice(func_list0)
         return fun
     else:
-        f = random.choice(total_func_list)
-        fun.append(f)
-        if(f in func_list2):
-            fun.append(build_random_function(min_depth - 1, max_depth - 1))
-            fun.append(build_random_function(min_depth - 1, max_depth - 1))
-        else: # function only takes one argument 
-            fun.append(build_random_function(min_depth - 1, max_depth - 1))
+        fun = random.choice(total_func_list)
+        if fun in func_list2: #takes 2 input variables
+            func1 = build_random_function(min_depth - 1, max_depth - 1) # completed one interation, so we have to subtract 1 from min and max depth
+            func2 = build_random_function(min_depth - 1, max_depth - 1)
+            new_func = lambda x,y: fun(func1(x, y), func2(x, y))
+        else: #takes one input variable
+            func1 = build_random_function(min_depth - 1, max_depth - 1)
+            new_func = lambda x,y: fun(func1(x, y))
 
-        return fun
-
-
-
-def evaluate_random_function(f, x, y):
-    """ Evaluate the random function f with inputs x,y
-        Representation of the function f is defined in the assignment writeup
-
-        f: the function to evaluate
-        x: the value of x to be used to evaluate the function
-        y: the value of y to be used to evaluate the function
-        returns: the function value
-
-        >>> evaluate_random_function(["x"],-0.5, 0.75)
-        -0.5
-        >>> evaluate_random_function(["y"],0.1,0.02)
-        0.02
-    """
-    if f[0] == "x":
-        return x
-    elif f[0] == "y":
-        return y
-    elif f[0] == "sin_pi":
-        return math.sin(math.pi*evaluate_random_function(f[1], x, y))
-    elif f[0] == "cos_pi":
-        return math.cos(math.pi*evaluate_random_function(f[1], x, y))
-    elif f[0] == "avg":
-        return evaluate_random_function(f[1], x, y)*evaluate_random_function(f[2], x, y)
-    elif f[0] == "prod":
-        return (evaluate_random_function(f[1], x, y)+evaluate_random_function(f[2], x, y))/2
-    elif f[0] == "neg":
-        return -(evaluate_random_function(f[1], x, y)
-    elif f[0] = "cube":
-        return (evaluate_random_function(f[1], x, y)**(3)
+        return new_func
 
 
 def remap_interval(val,
@@ -100,7 +78,9 @@ def remap_interval(val,
         >>> remap_interval(5, 4, 6, 1, 2)
         1.5
     """
-    var = output_interval_start + (val - input_interval_start)*(output_interval_end - output_interval_start) / float(input_interval_end - input_interval_start)
+    var = (val - input_interval_start)*(output_interval_end - output_interval_start)
+    var /= float(input_interval_end - input_interval_start)
+    var += output_interval_start
     return var
 
 
@@ -165,9 +145,9 @@ def generate_art(filename, x_size=350, y_size=350):
             x = remap_interval(i, 0, x_size, -1, 1)
             y = remap_interval(j, 0, y_size, -1, 1)
             pixels[i, j] = (
-                    color_map(evaluate_random_function(red_function, x, y)),
-                    color_map(evaluate_random_function(green_function, x, y)),
-                    color_map(evaluate_random_function(blue_function, x, y))
+                    color_map(red_function(x,y)),
+                    color_map(green_function(x,y)),
+                    color_map(blue_function(x,y))
                     )
 
     im.save(filename)
