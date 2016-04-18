@@ -1,4 +1,6 @@
-""" TODO: Put your header comment here """
+""" 
+Creates randomly generated art using pre-defined functions
+"""
 
 import random
 from PIL import Image
